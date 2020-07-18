@@ -4,7 +4,7 @@
 
 Submitted by: **AkiahTullis**
 
-Time spent: **4.5** hours spent in total
+Time spent: **8.5** hours spent in total
 
 ## User Stories
 
@@ -20,7 +20,8 @@ The following **optional** features are implemented:
 
 The following **additional** features are implemented:
 
-* [ ] List anything else that you can get done to improve the app functionality!
+* [x] User can **label todo items as important**
+* [x] User can seperate todo items into **tasks, events, and notes**
 
 ## Video Walkthrough
 

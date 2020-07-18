@@ -15,6 +15,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import java.io.File;
@@ -81,9 +83,16 @@ public class MainActivity extends AppCompatActivity {
         btnAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String s = etItem.getText().toString();
+                String note = etItem.getText().toString();
+                RadioButton[] rb = {findViewById( R.id.typeTask), findViewById(R.id.typeEvent), findViewById(R.id.typeNote)};
+                String prefix = "";
+
+                if (rb[0].isChecked()) prefix = "?.";
+                if (rb[1].isChecked()) prefix = "?0";
+                if (rb[2].isChecked()) prefix = "?-";
+
                 // add to model
-                items.add(s);
+                items.add(prefix + note);
                 // notify adapter that item has been inserted
                 itemsAdapter.notifyItemInserted(items.size()-1);
                 // clear edit text

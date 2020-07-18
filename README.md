@@ -4,7 +4,7 @@
 
 Submitted by: **AkiahTullis**
 
-Time spent: **3** hours spent in total
+Time spent: **4.5** hours spent in total
 
 ## User Stories
 
@@ -32,7 +32,7 @@ GIF created with [LiceCap](http://www.cockos.com/licecap/).
 
 ## Notes
 
-Describe any challenges encountered while building the app.
+Had some difficulty with FileUtils.readlines -- it was not being recognized. I solved this issue by folowing the advice in a youtube comment under *SimpleTodo: Episode 4*. I replaced "import android.os.FileUtils;" with "import org.apache.commons.io.FileUtils;", as suggested.
 
 ## License
 

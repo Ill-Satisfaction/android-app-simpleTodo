@@ -98,6 +98,8 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ViewHolder>{
                         tvTypeIcon.setImageResource(R.drawable.ic_baseline_notes_24);
                         break;
                     case '.':
+                        tvTypeIcon.setImageResource(R.drawable.ic_baseline_fiber_manual_record_24);
+                        break;
                     default:
                         item = "#" + item;
                         tvTypeIcon.setImageResource(R.drawable.ic_baseline_fiber_manual_record_24);

@@ -4,7 +4,7 @@
 
 Submitted by: **AkiahTullis**
 
-Time spent: **8.5** hours spent in total
+Time spent: **14** hours spent in total
 
 ## User Stories
 
@@ -22,6 +22,8 @@ The following **additional** features are implemented:
 
 * [x] User can **label todo items as important**
 * [x] User can seperate todo items into **tasks, events, and notes**
+* [x] User has access **two seperate lists**: a backlog and a 'today' page
+* [x] User can **move tasks between the two pages** by swiping
 
 ## Video Walkthrough
 
@@ -34,6 +36,8 @@ GIF created with [LiceCap](http://www.cockos.com/licecap/).
 ## Notes
 
 Had some difficulty with FileUtils.readlines -- it was not being recognized. I solved this issue by folowing the advice in a youtube comment under *SimpleTodo: Episode 4*. I replaced "import android.os.FileUtils;" with "import org.apache.commons.io.FileUtils;", as suggested.
+
+Figuring out the ItemTouchHelper took longer than anticipated. Animation was similarly unintuitive. There is a shameful amount of code duplication at present, so I'll have to go back and refactor that. I had to do a lot of reading today to understand some of these topics enough to do what I wanted with them.
 
 ## License
 

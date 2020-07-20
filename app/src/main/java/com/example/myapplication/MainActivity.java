@@ -1,9 +1,11 @@
 package com.example.myapplication;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.dynamicanimation.animation.DynamicAnimation;
 import androidx.dynamicanimation.animation.SpringAnimation;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.transition.Scene;
@@ -13,6 +15,7 @@ import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.content.ClipData;
 import android.content.Intent;
+import android.graphics.Canvas;
 import android.os.Bundle;
 //import android.os.FileUtils;
 import org.apache.commons.io.FileUtils;  // fix from youtube comment
@@ -77,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
 
         loadItems();
 
-        ItemsAdapter.OnLongClickListener onLongClickListenerBacklog = new ItemsAdapter.OnLongClickListener() {
+        final ItemsAdapter.OnLongClickListener onLongClickListenerBacklog = new ItemsAdapter.OnLongClickListener() {
             @Override
             public void onItemLongClicked(int position) {
                 // delete the item from the model
@@ -101,18 +104,18 @@ public class MainActivity extends AppCompatActivity {
                 startActivityForResult(i, EDIT_BACKLOG_CODE);
             }
         };
-        ItemsAdapter.OnLongClickListener onLongClickListenerToday = new ItemsAdapter.OnLongClickListener() {
+        final ItemsAdapter.OnLongClickListener onLongClickListenerToday = new ItemsAdapter.OnLongClickListener() {
             @Override
             public void onItemLongClicked(int position) {
                 // delete the item from the model
                 itemsToday.remove(position);
                 // notify the adapter which position got deleted
-                itemsAdapter.notifyItemRemoved(position);
+                itemsAdapterToday.notifyItemRemoved(position);
                 Toast.makeText(getApplicationContext(), "Item was removed", Toast.LENGTH_SHORT).show();
                 saveItems();
             }
         };
-        ItemsAdapter.OnClickListener onClickListenerToday = new ItemsAdapter.OnClickListener() {
+        final ItemsAdapter.OnClickListener onClickListenerToday = new ItemsAdapter.OnClickListener() {
             @Override
             public void onItemClicked(int position) {
                 Log.d("MainActivity", "Single click at position" + position);
@@ -170,6 +173,45 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        // unsure about this code for now
+
+        ItemTouchHelper backlogIth = new ItemTouchHelper(
+                new ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP | ItemTouchHelper.DOWN, ItemTouchHelper.RIGHT) {
+                    @Override
+                    public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+                        return false;
+                    }
+
+                    @Override
+                    public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                        itemsToday.add(itemsBacklog.get(viewHolder.getAdapterPosition()));
+                        itemsAdapterToday.notifyItemInserted(itemsToday.size()-1);
+                        onLongClickListenerBacklog.onItemLongClicked(viewHolder.getAdapterPosition());
+                        Toast.makeText(getApplicationContext(), "Item was added!", Toast.LENGTH_SHORT).show();
+                        saveItems();
+                    }
+                }
+        );
+        backlogIth.attachToRecyclerView(rvItems);
+
+        ItemTouchHelper todayIth = new ItemTouchHelper(
+                new ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP | ItemTouchHelper.DOWN, ItemTouchHelper.LEFT) {
+                    @Override
+                    public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+                        return false;
+                    }
+
+                    @Override
+                    public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                        itemsBacklog.add(itemsToday.get(viewHolder.getAdapterPosition()));
+                        itemsAdapter.notifyItemInserted(itemsBacklog.size()-1);
+                        onLongClickListenerToday.onItemLongClicked(viewHolder.getAdapterPosition());
+                        Toast.makeText(getApplicationContext(), "Item was added!", Toast.LENGTH_SHORT).show();
+                        saveItems();
+                    }
+                }
+        );
+        todayIth.attachToRecyclerView(rvToday);
     }
 
     private void slideCard() {

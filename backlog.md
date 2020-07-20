@@ -8,11 +8,10 @@
 done | points | task
 --- | --- | ---
 [x] |	-	|	implement item types (action, event, note)
- | |
 [x] |	3	|	implement backlog/ scratch panel
 [x] |	2	|	implement 'today' page/panel
-[ ]	|	3	|	implement 'move to today'
-[ ] |	2	|	implement 'postpone'/'move to backlog'
+[x]	|	3	|	implement 'move to today'
+[x] |	2	|	implement 'postpone'/'move to backlog'
  | |
 [ ] |	8	|	implement collections
 [ ]	|	3	|	implement navigation
@@ -48,7 +47,9 @@ done | points | task
 - close keyboard when click off
 - start backlog tray in the 'down' position
 - update 'add' button so that it does not bleed off-screen
-- make the listeners general
+- fix code duplication around the listeners and itemtouchhelper
+- refactor for better encapsulation
+- fix excessive toasts -> implement snackbars?
 
 
 

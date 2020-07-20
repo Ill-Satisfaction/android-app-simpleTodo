@@ -132,7 +132,7 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-    //  METHODS
+    //  NON-OVERRIDE METHODS
 
     // this will load items by reading line-by-line
     private void loadItems() {
@@ -159,10 +159,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void removeItem(int position, List<String> list, ItemsAdapter ia, boolean toast) {
-        list.remove(position);
-        ia.notifyItemRemoved(position);
-        saveItems();
-        if (toast) Toast.makeText(getApplicationContext(), "Item was removed", Toast.LENGTH_SHORT).show();
+        try {
+            list.remove(position);
+            ia.notifyItemRemoved(position);
+            saveItems();
+            if (toast) Toast.makeText(getApplicationContext(), "Item was removed", Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            Log.e("MainActivity", "Error deleting item", e);
+        }
+
     }
 
     private void editItem(int position, List<String> list, int code) {
@@ -245,11 +250,10 @@ public class MainActivity extends AppCompatActivity {
                 });
         ith.attachToRecyclerView(rv);
     }
+    
 
 
-
-
-
+    // OVERRIDE METHODS (EXCEPT onCreate)
 
     // create an action bar button
     @Override

@@ -14,6 +14,7 @@ import androidx.transition.TransitionManager;
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.content.ClipData;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Canvas;
 import android.os.Bundle;
@@ -67,105 +68,56 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         getSupportActionBar().setTitle("Simple To Do");
 
+        // define fields
         btnAdd = findViewById(R.id.btnAdd);
         btnSlide = findViewById(R.id.btnSlideCard);
         chkPriority = findViewById(R.id.priorityCheckBox);
         etItem = findViewById(R.id.etItem);
         rvItems = findViewById(R.id.rvItems);
         rvToday = findViewById(R.id.rvToday);
-
         trayDown = false;
 
         loadItems();
 
+        // define click listeners for recycler views
         final ItemsAdapter.OnLongClickListener onLongClickListenerBacklog = new ItemsAdapter.OnLongClickListener() {
             @Override
             public void onItemLongClicked(int position) {
-                // delete the item from the model
-                itemsBacklog.remove(position);
-                // notify the adapter which position got deleted
-                itemsAdapter.notifyItemRemoved(position);
-                Toast.makeText(getApplicationContext(), "Item was removed", Toast.LENGTH_SHORT).show();
-                saveItems();
+                removeItem(position, itemsBacklog, itemsAdapter,true);
             }
         };
-        ItemsAdapter.OnClickListener onClickListenerBacklog = new ItemsAdapter.OnClickListener() {
+       final ItemsAdapter.OnClickListener onClickListenerBacklog = new ItemsAdapter.OnClickListener() {
             @Override
             public void onItemClicked(int position) {
-                Log.d("MainActivity", "Single click at position" + position);
-                // create new activity
-                Intent i = new Intent(MainActivity.this, EditActivity.class);
-                // pass the data being edited
-                i.putExtra(KEY_ITEM_TEXT, itemsBacklog.get(position));
-                i.putExtra(KEY_ITEM_POSITION, position);
-                // display the activity
-                startActivityForResult(i, EDIT_BACKLOG_CODE);
+                editItem(position, itemsBacklog, EDIT_BACKLOG_CODE);
             }
         };
         final ItemsAdapter.OnLongClickListener onLongClickListenerToday = new ItemsAdapter.OnLongClickListener() {
             @Override
             public void onItemLongClicked(int position) {
-                // delete the item from the model
-                itemsToday.remove(position);
-                // notify the adapter which position got deleted
-                itemsAdapterToday.notifyItemRemoved(position);
-                Toast.makeText(getApplicationContext(), "Item was removed", Toast.LENGTH_SHORT).show();
-                saveItems();
+                removeItem(position, itemsToday, itemsAdapterToday, true);
             }
         };
         final ItemsAdapter.OnClickListener onClickListenerToday = new ItemsAdapter.OnClickListener() {
             @Override
             public void onItemClicked(int position) {
-                Log.d("MainActivity", "Single click at position" + position);
-                // create new activity
-                Intent i = new Intent(MainActivity.this, EditActivity.class);
-                // pass the data being edited
-                i.putExtra(KEY_ITEM_TEXT, itemsToday.get(position));
-                i.putExtra(KEY_ITEM_POSITION, position);
-                // display the activity
-                startActivityForResult(i, EDIT_TODAY_CODE);
+                editItem(position, itemsToday, EDIT_TODAY_CODE);
             }
         };
 
-        itemsAdapter = new ItemsAdapter(itemsBacklog, onLongClickListenerBacklog, onClickListenerBacklog);
-        rvItems.setAdapter(itemsAdapter);
-        rvItems.setLayoutManager(new LinearLayoutManager(this));
-        itemsAdapterToday = new ItemsAdapter(itemsToday, onLongClickListenerToday, onClickListenerToday);
-        rvToday.setAdapter(itemsAdapterToday);
-        rvToday.setLayoutManager(new LinearLayoutManager(this));
+        // set up item adapters
+        itemsAdapter = setupItemsAdapter(this, itemsBacklog, rvItems, itemsAdapter, onClickListenerBacklog, onLongClickListenerBacklog);
+        itemsAdapterToday = setupItemsAdapter(this, itemsToday, rvToday, itemsAdapter, onClickListenerToday, onLongClickListenerToday);
 
+        // set click listeners for misc. buttons
         btnAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String note = etItem.getText().toString();
-                RadioButton[] rb = {findViewById( R.id.typeTask), findViewById(R.id.typeEvent), findViewById(R.id.typeNote)};
-                String prefix = "";
-
-                // set priority
-                if (chkPriority.isChecked()) prefix = "!";
-                else prefix = "?";
-                chkPriority.setChecked(false);
-
-                // set task type
-                if (rb[0].isChecked()) prefix += ".";
-                if (rb[1].isChecked()) prefix += "0";
-                if (rb[2].isChecked()) prefix += "-";
-
-                // open card if closed
-                if(trayDown) slideCard();
-                // add to model
-                itemsBacklog.add(prefix + note);
-                // notify adapter that item has been inserted
-                itemsAdapter.notifyItemInserted(itemsBacklog.size()-1);
-                // clear edit text
-                etItem.setText("");
-                Toast.makeText(getApplicationContext(), "Item was added!", Toast.LENGTH_SHORT).show();
-                saveItems();
-            }
+                addItemFromHotbar(true); }
         });
-
         btnSlide.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -173,63 +125,131 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // unsure about this code for now
+       // set up touch helpers
+        setupTouchHelper(itemsBacklog, itemsToday, rvItems, itemsAdapter, itemsAdapterToday);
+        setupTouchHelper(itemsToday, itemsBacklog, rvToday, itemsAdapterToday, itemsAdapter);
+    }
 
-        ItemTouchHelper backlogIth = new ItemTouchHelper(
-                new ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP | ItemTouchHelper.DOWN, ItemTouchHelper.RIGHT) {
-                    @Override
-                    public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
-                        return false;
-                    }
 
-                    @Override
-                    public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
-                        itemsToday.add(itemsBacklog.get(viewHolder.getAdapterPosition()));
-                        itemsAdapterToday.notifyItemInserted(itemsToday.size()-1);
-                        onLongClickListenerBacklog.onItemLongClicked(viewHolder.getAdapterPosition());
-                        Toast.makeText(getApplicationContext(), "Item was added!", Toast.LENGTH_SHORT).show();
-                        saveItems();
-                    }
-                }
-        );
-        backlogIth.attachToRecyclerView(rvItems);
 
-        ItemTouchHelper todayIth = new ItemTouchHelper(
-                new ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP | ItemTouchHelper.DOWN, ItemTouchHelper.LEFT) {
-                    @Override
-                    public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
-                        return false;
-                    }
+    //  METHODS
 
-                    @Override
-                    public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
-                        itemsBacklog.add(itemsToday.get(viewHolder.getAdapterPosition()));
-                        itemsAdapter.notifyItemInserted(itemsBacklog.size()-1);
-                        onLongClickListenerToday.onItemLongClicked(viewHolder.getAdapterPosition());
-                        Toast.makeText(getApplicationContext(), "Item was added!", Toast.LENGTH_SHORT).show();
-                        saveItems();
-                    }
-                }
-        );
-        todayIth.attachToRecyclerView(rvToday);
+    // this will load items by reading line-by-line
+    private void loadItems() {
+        try {
+            itemsBacklog = new ArrayList<>(FileUtils.readLines(getDataFile(FILES.BACKLOG)));
+            itemsToday = new ArrayList<>(FileUtils.readLines(getDataFile(FILES.TODAY)));
+        } catch (IOException e) {
+            Log.e("MainActivity", "Error reading items", e);
+            itemsBacklog = new ArrayList<>();
+            itemsToday = new ArrayList<>();
+        }
+    }
+
+    private File getDataFile(FILES f) {
+        return new File(getFilesDir(), f.toString() + ".txt");
+    }
+
+    // add an item to the list
+    private void addItem(List<String> listTo, ItemsAdapter ia, String s, boolean toast) {
+        listTo.add(s);
+        ia.notifyItemInserted(listTo.size()-1);
+        saveItems();
+        if (toast) Toast.makeText(getApplicationContext(), "Item was added!", Toast.LENGTH_SHORT).show();
+    }
+
+    private void removeItem(int position, List<String> list, ItemsAdapter ia, boolean toast) {
+        list.remove(position);
+        ia.notifyItemRemoved(position);
+        saveItems();
+        if (toast) Toast.makeText(getApplicationContext(), "Item was removed", Toast.LENGTH_SHORT).show();
+    }
+
+    private void editItem(int position, List<String> list, int code) {
+        Log.d("MainActivity", "Single click at position" + position);
+        // create new activity
+        Intent i = new Intent(MainActivity.this, EditActivity.class);
+        // pass the data being edited
+        i.putExtra(KEY_ITEM_TEXT, list.get(position));
+        i.putExtra(KEY_ITEM_POSITION, position);
+        // display the activity
+        startActivityForResult(i, code);
+        Toast.makeText(getApplicationContext(), "Item updated successfully", Toast.LENGTH_SHORT).show();
+    }
+
+    // this saves todos as lines in a .txt file
+    private void saveItems() {
+        try {
+            FileUtils.writeLines(getDataFile(FILES.BACKLOG), itemsBacklog);
+            FileUtils.writeLines(getDataFile(FILES.TODAY), itemsToday);
+        } catch (IOException e) {
+            Log.e("MainActivity", "Error writing items", e);
+        }
+    }
+
+    private ItemsAdapter setupItemsAdapter (Context ctx, List<String> list, RecyclerView rv, ItemsAdapter ia, ItemsAdapter.OnClickListener cl, ItemsAdapter.OnLongClickListener lcl) {
+        ia = new ItemsAdapter(list, lcl, cl);
+        rv.setAdapter(ia);
+        rv.setLayoutManager(new LinearLayoutManager(ctx));
+        return ia;
+    }
+
+    private void addItemFromHotbar (boolean toast) {
+        String note = etItem.getText().toString();
+        RadioButton[] rb = {findViewById( R.id.typeTask), findViewById(R.id.typeEvent), findViewById(R.id.typeNote)};
+        String prefix = "";
+        // set prefix
+        prefix = (chkPriority.isChecked()) ? "!" : "?";
+        if (rb[0].isChecked()) prefix += ".";
+        if (rb[1].isChecked()) prefix += "0";
+        if (rb[2].isChecked()) prefix += "-";
+        // cleanup
+        chkPriority.setChecked(false);
+        etItem.setText("");
+        if(trayDown) slideCard();
+
+        // call addItem
+        addItem(itemsBacklog, itemsAdapter, prefix+note, toast);
     }
 
     private void slideCard() {
         // create and run spring animation
+        ImageButton ib = findViewById(R.id.btnSlideCard);
         final View img = findViewById(R.id.slidingCard);
         final SpringAnimation anim = new SpringAnimation(img, DynamicAnimation.Y);
         float pixelPerSecond = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 30, getResources().getDisplayMetrics());
-        float endPos = (trayDown) ? 0 : img.getHeight()-100;
+        float endPos = (trayDown) ? 0 : img.getHeight()-100; // TODO: hardcoded value should be made relative
         anim.setStartVelocity(pixelPerSecond);
-        anim.animateToFinalPosition(endPos);
-
+        //toggle state
         trayDown = !trayDown;
-
-        //set the icon
-        ImageButton ib = findViewById(R.id.btnSlideCard);
         if(trayDown) ib.setImageResource(R.drawable.ic_baseline_arrow_drop_up_24);
         else ib.setImageResource(R.drawable.ic_baseline_arrow_drop_down_24);
+        //play animation
+        anim.animateToFinalPosition(endPos);
     }
+
+    private void setupTouchHelper (final List<String> listFrom, final List<String> listTo, RecyclerView rv, final ItemsAdapter iaFrom, final ItemsAdapter iaTo) {
+        ItemTouchHelper ith = new ItemTouchHelper(
+                new ItemTouchHelper.SimpleCallback(ItemTouchHelper.ACTION_STATE_DRAG, ItemTouchHelper.LEFT) {
+                   @Override
+                    public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+                        return false;
+                    }
+
+                    @Override
+                    public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+                        addItem(listTo, iaTo, listFrom.get(viewHolder.getAdapterPosition()),false);
+                        removeItem(viewHolder.getAdapterPosition(), listFrom, iaFrom,false);
+                        Toast.makeText(getApplicationContext(), "Item moved!", Toast.LENGTH_SHORT).show();
+                    }
+                });
+        ith.attachToRecyclerView(rv);
+    }
+
+
+
+
+
 
     // create an action bar button
     @Override
@@ -241,9 +261,7 @@ public class MainActivity extends AppCompatActivity {
     // handle action bar button activities
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-
-        if (id == R.id.btnIndex) {
+        if (item.getItemId() == R.id.btnIndex) {
             slideCard();
         }
         return super.onOptionsItemSelected(item);
@@ -264,43 +282,14 @@ public class MainActivity extends AppCompatActivity {
                 itemsAdapterToday.notifyItemChanged(position);
             }
             if (requestCode == EDIT_BACKLOG_CODE) {
-                //update the model at right pos w/ new item text
                 itemsBacklog.set(position, itemText);
-                // notifythe adapter
                 itemsAdapter.notifyItemChanged(position);
             }
             // persist the changes
             saveItems();
-            Toast.makeText(getApplicationContext(), "Item updated successfully", Toast.LENGTH_SHORT).show();
         } else {
             Log.w("MainActivity", "Unknown call to onActivityResult");
         }
     }
 
-    private File getDataFile(FILES f) {
-        return new File(getFilesDir(), f.toString() + ".txt");
-    }
-
-    // this will load items by reading line-by-line in data.txt
-    private void loadItems() {
-        try {
-            itemsBacklog = new ArrayList<>(FileUtils.readLines(getDataFile(FILES.BACKLOG)));
-            itemsToday = new ArrayList<>(FileUtils.readLines(getDataFile(FILES.TODAY)));
-        } catch (IOException e) {
-            Log.e("MainActivity", "Error reading items", e);
-            itemsBacklog = new ArrayList<>();
-            itemsToday = new ArrayList<>();
-        }
-    }
-
-    // this saves todos as lines in data.txt
-    private void saveItems() {
-        try {
-            FileUtils.writeLines(getDataFile(FILES.BACKLOG), itemsBacklog);
-            FileUtils.writeLines(getDataFile(FILES.TODAY), itemsToday);
-        } catch (IOException e) {
-            Log.e("MainActivity", "Error writing items", e);
-        }
-
-    }
 }

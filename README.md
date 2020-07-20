@@ -4,7 +4,7 @@
 
 Submitted by: **AkiahTullis**
 
-Time spent: **14** hours spent in total
+Time spent: **16** hours spent in total
 
 ## User Stories
 

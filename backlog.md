@@ -9,10 +9,10 @@ done | points | task
 --- | --- | ---
 [x] |	-	|	implement item types (action, event, note)
  | |
-[ ] |	3	|	implement backlog/ scratch panel
-[ ] |	2	|	implement 'postpone'/'move to backlog'
-[ ] |	2	|	implement 'today' page/panel
+[x] |	3	|	implement backlog/ scratch panel
+[x] |	2	|	implement 'today' page/panel
 [ ]	|	3	|	implement 'move to today'
+[ ] |	2	|	implement 'postpone'/'move to backlog'
  | |
 [ ] |	8	|	implement collections
 [ ]	|	3	|	implement navigation
@@ -27,7 +27,7 @@ done | points | task
 [ ]	|	13	|	implement tags and filtering
 [ ]	|	8	|	implement 'all items' screen
 [ ] |	13	|	implement reminders 
-
+ | |
 [ ]	|	e	|	refactor code\
 [ ]	|	e	|	refactor ui
 
@@ -42,6 +42,13 @@ done | points | task
 [ ] |	1	|	make 'item type' button lead to edit screen\
 [ ] |	2	|	implement check off item
 
+
+## new / unsorted
+- apply a material design theme
+- close keyboard when click off
+- start backlog tray in the 'down' position
+- update 'add' button so that it does not bleed off-screen
+- make the listeners general
 
 
 

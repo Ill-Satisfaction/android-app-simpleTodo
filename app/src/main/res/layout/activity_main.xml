@@ -6,73 +6,173 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <Button
-        android:id="@+id/btnAdd"
-        android:layout_width="88dp"
-        android:layout_height="wrap_content"
-        android:text="ADD"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <EditText
-        android:id="@+id/etItem"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:hint="Add an item here"
-        android:inputType="textPersonName"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/btnAdd"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvItems"
-        android:layout_width="0dp"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/typeSelector"
+        app:layout_constraintBottom_toTopOf="@+id/addItem"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent">
 
-    <RadioGroup
-        android:id="@+id/typeSelector"
-        android:layout_width="wrap_content"
+        <TextView
+            android:id="@+id/TodayTitle"
+            style="@android:style/Widget.TextView.PopupMenu"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Today"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvToday"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/TodayTitle" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/slidingCard"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@color/colorSurface"
+        app:layout_constraintBottom_toTopOf="@+id/addItem"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageButton
+            android:id="@+id/btnSlideCard"
+            style="@android:style/Widget.Holo.ImageButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/colorSurface"
+            app:layout_constraintBottom_toTopOf="@+id/rvItems"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_baseline_arrow_drop_down_24" />
+
+        <TextView
+            android:id="@+id/slideCardTitle"
+            style="@android:style/Widget.TextView.PopupMenu"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Backlog"
+            android:textColor="@color/colorSecondary"
+            app:layout_constraintBottom_toBottomOf="@+id/btnSlideCard"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/btnSlideCard"
+            app:layout_constraintTop_toTopOf="@id/btnSlideCard" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvItems"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="16dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/slideCardTitle" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/addItem"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:hapticFeedbackEnabled="true"
-        android:orientation="horizontal"
-        app:layout_constraintBottom_toTopOf="@+id/etItem"
+        android:background="@color/colorSurface"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
-        <RadioButton
-            android:id="@+id/typeTask"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="6dp"
-            android:layout_marginRight="6dp"
-            android:button="@drawable/icon_type_selector_task"
-            android:checked="true"
-            android:includeFontPadding="false" />
+        <CheckBox
+            android:id="@+id/priorityCheckBox"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
+            android:button="@drawable/icon_priority_toggle_selector"
+            android:textSize="0sp"
+            app:layout_constraintBottom_toBottomOf="@+id/etItem"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/etItem" />
 
-        <RadioButton
-            android:id="@+id/typeEvent"
-            android:layout_width="match_parent"
+        <RadioGroup
+            android:id="@+id/typeSelector"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="6dp"
-            android:layout_marginRight="6dp"
-            android:button="@drawable/icon_type_selector_event"
-            android:includeFontPadding="false" />
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:hapticFeedbackEnabled="true"
+            android:measureWithLargestChild="false"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toTopOf="@+id/etItem"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
-        <RadioButton
-            android:id="@+id/typeNote"
-            android:layout_width="match_parent"
+            <RadioButton
+                android:id="@+id/typeTask"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginLeft="6dp"
+                android:layout_marginRight="6dp"
+                android:button="@drawable/icon_type_selector_task"
+                android:checked="true"
+                android:includeFontPadding="false" />
+
+            <RadioButton
+                android:id="@+id/typeEvent"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginLeft="6dp"
+                android:layout_marginRight="6dp"
+                android:button="@drawable/icon_type_selector_event"
+                android:includeFontPadding="false" />
+
+            <RadioButton
+                android:id="@+id/typeNote"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginLeft="6dp"
+                android:layout_marginRight="6dp"
+                android:button="@drawable/icon_type_selector_note"
+                android:includeFontPadding="false" />
+
+        </RadioGroup>
+
+        <EditText
+            android:id="@+id/etItem"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="6dp"
-            android:layout_marginRight="6dp"
-            android:button="@drawable/icon_type_selector_note"
-            android:includeFontPadding="false" />
+            android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginBottom="8dp"
+            android:ems="10"
+            android:hint="Add an item here"
+            android:inputType="textPersonName"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/btnAdd"
+            app:layout_constraintStart_toEndOf="@+id/priorityCheckBox" />
 
-    </RadioGroup>
+        <Button
+            android:id="@+id/btnAdd"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_marginBottom="8dp"
+            android:includeFontPadding="true"
+            android:paddingLeft="0dp"
+            android:paddingRight="0dp"
+            android:textSize="0sp"
+            app:icon="@drawable/ic_baseline_add_24"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

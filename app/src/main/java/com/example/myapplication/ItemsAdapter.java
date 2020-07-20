@@ -20,22 +20,24 @@ import java.util.List;
 
 public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ViewHolder>{
 
-    public interface OnLongClickListener {
-        void onItemLongClicked(int position);
-    }
-
     public interface OnClickListener {
         void onItemClicked(int position);
     }
 
+    public interface OnLongClickListener {
+        void onItemLongClicked(int position);
+    }
+
     List<String> items;
-    OnLongClickListener longClickListener;
     OnClickListener clickListener;
+    OnLongClickListener longClickListener;
+    ItemsAdapter self;
 
     public ItemsAdapter( List<String> items, OnLongClickListener longClickListener, OnClickListener clickListener) {
         this.items = items;
         this.longClickListener = longClickListener;
         this.clickListener = clickListener;
+        this.self = this;
     }
 
     @NonNull
@@ -77,18 +79,18 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ViewHolder>{
 
         // update view inside view holder
         public void bind(String item) {
-            if(item.length()>0) {
+            if(item.length()>1) {
                 // set icons
                 switch (item.charAt(0)) {
                     case '!':
                         tvImportanceIcon.setImageResource(R.drawable.ic_baseline_priority_high_24);
                         break;
                     case '?':
-                        tvImportanceIcon.setImageResource(R.drawable.ic_baseline_priority_high_24_inactive);
+                        tvImportanceIcon.setImageResource(R.drawable.ic_baseline_priority_high_24_invis);
                         break;
                     default:
                         item = "#" + item;
-                        tvImportanceIcon.setImageResource(R.drawable.ic_baseline_priority_high_24_inactive);
+                        tvImportanceIcon.setImageResource(R.drawable.ic_baseline_priority_high_24_invis);
                 }
                 switch (item.charAt(1)) {
                     case '0':

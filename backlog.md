@@ -13,8 +13,7 @@ done | points | task
 [x]	|	3	|	implement 'move to today'
 [x] |	2	|	implement 'postpone'/'move to backlog'
  | |
-[ ] |	8	|	implement collections
-[ ]	|	3	|	implement navigation
+[x] |	8	|	implement collections
 [ ] |	3	|	implement 'move to collection'
 [ ] |	5	|	implement monthly log collection
 [ ] |	3	|	implement future log collection
@@ -50,6 +49,8 @@ done | points | task
 - fix code duplication around the listeners and itemtouchhelper
 - refactor for better encapsulation
 - fix excessive toasts -> implement snackbars?
+- implement split screen
+- implement user-created collections
 
 
 

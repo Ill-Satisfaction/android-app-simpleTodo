@@ -33,18 +33,15 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ViewHolder>{
     OnLongClickListener longClickListener;
     ItemsAdapter self;
 
-    public ItemsAdapter( List<String> items, OnLongClickListener longClickListener, OnClickListener clickListener) {
-        this.items = items;
+    public ItemsAdapter( Collection collection, OnLongClickListener longClickListener, OnClickListener clickListener) {
+        this.items = collection.getItems();
         this.longClickListener = longClickListener;
         this.clickListener = clickListener;
-        this.self = this;
     }
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        // use layout inflater to inflate a view
-        //View todoView = LayoutInflater.from(parent.getContext()).inflate(android.R.layout.simple_list_item_1, parent, false); //this is the line methinks
         View todoView = LayoutInflater.from(parent.getContext()).inflate(R.layout.view_list_item, parent, false);
         return new ViewHolder(todoView);
     }

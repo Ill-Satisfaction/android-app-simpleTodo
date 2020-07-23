@@ -66,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        getSupportActionBar().setTitle("Simple To Do");
+        getSupportActionBar().setTitle("Simple To Do1");
 
         // define fields
         btnAdd = findViewById(R.id.btnAdd);
@@ -270,8 +270,9 @@ public class MainActivity extends AppCompatActivity {
     private void loadItems() {
         collections = new ArrayList<Collection>();
         try {
-            for (FILES f : FILES.values())
+            for (FILES f : FILES.values()) {
                 collections.add(new Collection(f, FileUtils.readLines(getDataFile(f))));
+            }
         } catch (IOException e) {
             Log.e("MainActivity", "Error reading items", e);
         }
@@ -288,7 +289,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private File getDataFile(FILES f) {
-        return new File(getFilesDir(), f.toString() + ".txt");
+        File file = new File(getFilesDir(), f.toString() + ".txt");
+        try {
+            file.createNewFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return file;
     }
 
 }
